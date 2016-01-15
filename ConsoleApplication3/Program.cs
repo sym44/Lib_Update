@@ -34,18 +34,23 @@ namespace DataElf
 
         static void Main(string[] args)
         {
-            read_stock("20150105");
+            string updateDate = "20150105";
+            read_stock(updateDate);
 
 
-            FetchData("20150105", "000001.SZ");
-            ClvUpdater.updateClvHelper(dataList, "000001.SZ", "20150105", 1);
+
+
             //check new stocks
 
             //update_prices("20150105");
 
 
             //update_CLV 
-
+            foreach (string stock in stockList)
+            {
+                FetchData(updateDate, stock);
+                ClvUpdater.updateClvHelper(dataList, stock, updateDate);
+            }
 
             Console.ReadKey();
         }

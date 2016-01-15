@@ -29,16 +29,34 @@ namespace DataElf
         /// </summary>
         /// <param name="values">a list of certain length of values of different dates</param>
         /// <returns>MA</returns>
-        public static double MACalculator(List<double> values, int delay)
+        public static double[] MACalculator(List<double> values)
         {
+            double[] resultArray = new double[6];
             double sum = 0.0;
+            int days = 0;
 
-            for(int i = 1; i <= delay; i++)
+            if (values.Count >= 250)
             {
-                sum += values[values.Count - i];
+                for (int i = 0; i <= 249; i++)
+                {
+                    sum += values[i];
+                    if (values.GetType().Name != "DBNull")
+                        days++;
+
+                    if (i == 4) resultArray[0] = sum / days;
+                    else if (i == 9) resultArray[1] = sum / days;
+                    else if (i == 19) resultArray[2] = sum / days;
+                    else if (i == 49) resultArray[3] = sum / days;
+                    else if (i == 119) resultArray[4] = sum / days;
+                    else if (i == 249) resultArray[5] = sum / days;
+                }
+            }
+            else
+            {
+                Console.WriteLine("data not available, needs to wait for 250 days");
             }
 
-            return sum/delay;
+            return resultArray;
         }
 
     }
