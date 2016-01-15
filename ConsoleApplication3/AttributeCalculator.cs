@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApplication3
+namespace DataElf
 {
     /// <summary>
     /// Helper class which contains calculators for each attributes.

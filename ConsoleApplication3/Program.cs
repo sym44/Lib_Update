@@ -7,13 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApplication3
+namespace DataElf
 {
     class Program
     {
         static ArrayList stockList = new ArrayList(2000);
         static List<priceCombo> dataList = new List<priceCombo>();
 
+        #region definition
         public struct priceCombo
         {
             public double s_dq_open;
@@ -29,18 +30,20 @@ namespace ConsoleApplication3
             public string trade_dt;
             public double value;
         }
+        #endregion
 
         static void Main(string[] args)
         {
             read_stock("20150105");
 
 
+            FetchData("20150105", "000001.SZ");
+            ClvUpdater.updateClvHelper(dataList, "000001.SZ", "20150105", 1);
             //check new stocks
 
             //update_prices("20150105");
 
 
-            FetchData("20150105", "000001.SZ");
             //update_CLV 
 
 

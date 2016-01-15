@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace ConsoleApplication3
+namespace DataElf
 {
     class SQLHelper
     {
@@ -78,11 +78,22 @@ namespace ConsoleApplication3
                 connection.Open();
 
                 SqlCommand sqlCmd = new SqlCommand();
+                sqlCmd.Connection = connection;
                 sqlCmd.CommandType = CommandType.Text;
                 sqlCmd.CommandText = "UPDATE Result SET " + fieldName + " = " 
                     + value + " where s_info_windcode = '"
                     + s_info_windcode + "' and trade_dt = '" + trade_dt + "'";
+
+                SqlParameter sqlReturn;
+                sqlReturn = sqlCmd.Parameters.Add("@return_value", SqlDbType.Int);
+                sqlReturn.Direction = ParameterDirection.ReturnValue;
+
                 sqlCmd.ExecuteNonQuery();
+
+                Console.WriteLine("........................{0}", sqlReturn.Value.ToString());
+                Console.WriteLine("{0}...{1}...{2}...{3}", s_info_windcode, trade_dt, fieldName, value);
+
+                connection.Close();
             }
         }
     }
