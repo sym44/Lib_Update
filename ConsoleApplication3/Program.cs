@@ -48,8 +48,13 @@ namespace DataElf
             //update_CLV 
             foreach (string stock in stockList)
             {
-                FetchData(updateDate, stock);
-                ClvUpdater.updateClvHelper(dataList, stock, updateDate);
+                //update CLV
+                ClvUpdater clvUpdaterObj = new ClvUpdater();
+                clvUpdaterObj.updateClv(stock, updateDate);
+
+                //update AD
+                ADUpdater adUpdaterObj = new ADUpdater();
+                adUpdaterObj.updateAD(stock, updateDate);
             }
 
             Console.ReadKey();
@@ -116,51 +121,6 @@ namespace DataElf
                 connection.Close();
             }
         }
-
-        static void FetchData(string trade_dt, string stock)
-        {
-            string con;
-            con = "Server=localhost\\mssqlserver01;Database=stock_price;uid=sa;pwd=84265";
-
-            using (SqlConnection connection = new SqlConnection(con))
-            {
-                connection.Open();
-
-                // check if the date has already been inserted
-                SqlCommand cmd = new SqlCommand();
-                cmd.Connection = connection;
-                cmd.CommandType = CommandType.Text;
-                cmd.CommandText = "select s_info_windcode, s_dq_open, s_dq_high, s_dq_low, " 
-                    + "s_dq_close, s_dq_volume from dbo.Result where trade_dt = '"
-                    + trade_dt + "' and s_info_windcode = '" + stock + "'";
-                SqlDataReader dr = cmd.ExecuteReader();
-
-                while (dr.Read())
-                {
-                    priceCombo structObj;
-                    structObj.s_dq_open = Convert.ToDouble(dr[1]);
-                    structObj.s_dq_high = Convert.ToDouble(dr[2]);
-                    structObj.s_dq_low = Convert.ToDouble(dr[3]);
-                    structObj.s_dq_close = Convert.ToDouble(dr[4]);
-                    structObj.s_dq_volume = Convert.ToDouble(dr[5]);
-
-                    dataList.Add(structObj);
-                }
-                dr.Close();
-
-                Console.WriteLine(dataList[0].s_dq_open);
-
-                connection.Close();
-            }
-        }
-
-        static void update_clv(string trade_dt)
-        {
-            
-
-
-        }
-
 
     }
 }

@@ -22,6 +22,11 @@ namespace DataElf
             return (2 * close - high - low) / (high - low);
         }
 
+        public static double ADCalculator()
+        {
+            return 0.0;
+        }
+
         /// <summary>
         /// MA: moving average
         /// An often used helper method which take in a list of values (of consecutive
