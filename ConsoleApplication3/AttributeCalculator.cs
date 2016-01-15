@@ -22,9 +22,21 @@ namespace DataElf
             return (2 * close - high - low) / (high - low);
         }
 
-        public static double ADCalculator()
+        /// <summary>
+        /// AD: accumulation distribution line
+        /// AD = SUM(CLV*Volume)
+        /// </summary>
+        /// <returns>AD</returns>
+        public static double ADCalculator(double[] clvArray, double[] volumeArray, 
+            int length)
         {
-            return 0.0;
+            double sum = 0.0;
+
+            for (int i = 0; i < length; i++)
+            {
+                sum += clvArray[i] * volumeArray[i];
+            }
+            return sum/length;
         }
 
         /// <summary>

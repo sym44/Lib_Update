@@ -37,13 +37,9 @@ namespace DataElf
             string updateDate = "20150105";
             read_stock(updateDate);
 
-
-
-
             //check new stocks
 
             //update_prices("20150105");
-
 
             //update_CLV 
             foreach (string stock in stockList)
@@ -53,8 +49,13 @@ namespace DataElf
                 clvUpdaterObj.updateClv(stock, updateDate);
 
                 //update AD
-                ADUpdater adUpdaterObj = new ADUpdater();
-                adUpdaterObj.updateAD(stock, updateDate);
+                ADUpdater adUpdater5Obj = new ADUpdater();
+                adUpdater5Obj.updateAD(stock, updateDate, 5);
+                ADUpdater adUpdater14Obj = new ADUpdater();
+                adUpdater14Obj.updateAD(stock, updateDate, 14);
+                ADUpdater adUpdater20Obj = new ADUpdater();
+                adUpdater20Obj.updateAD(stock, updateDate, 20);
+
             }
 
             Console.ReadKey();

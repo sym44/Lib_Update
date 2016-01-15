@@ -38,8 +38,10 @@ namespace DataElf
                 while (dr.Read())
                 {
                     Program.stockValueCombo structObj;
-                    //if (dr[1].GetType().Name == "DBNull") Console.WriteLine("LLL");
-                    structObj.value = Convert.ToDouble(dr[1]);                
+                    if (dr[1].GetType().Name == "DBNull")
+                        structObj.value = 0.0;
+                    else
+                        structObj.value = Convert.ToDouble(dr[1]);           
                     dataList.Add(structObj.value);
                 }
                 dr.Close();
@@ -76,7 +78,7 @@ namespace DataElf
                 dr.Close();
                 connection.Close();
             }
-            return null;
+            return priceList;
         }
 
         /// <summary>
