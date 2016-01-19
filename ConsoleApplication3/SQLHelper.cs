@@ -37,6 +37,7 @@ namespace DataElf
                 SqlDataReader dr = cmd.ExecuteReader();
                 while (dr.Read())
                 {
+                    //TODO: modify the missing value 
                     Program.stockValueCombo structObj;
                     if (dr[1].GetType().Name == "DBNull")
                         structObj.value = 0.0;

@@ -8,15 +8,9 @@ namespace DataElf
 {
     interface IUpdate
     {
-
         /// <summary>
-        /// updates the first value of the attribute
+        /// No parameter fucntion: execute the update process
         /// </summary>
-        void updateBaseValue(string s_info_windcode, string trade_dt);
-        
-        /// <summary>
-        /// updates the following moving average values
-        /// </summary>
-        void updateDerivedValue(string s_info_windcode, string trade_dt);
+        void update();
     }
 }

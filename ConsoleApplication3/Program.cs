@@ -45,16 +45,20 @@ namespace DataElf
             foreach (string stock in stockList)
             {
                 //update CLV
-                ClvUpdater clvUpdaterObj = new ClvUpdater();
-                clvUpdaterObj.updateClv(stock, updateDate);
+                ClvUpdater clvUpdaterObj = new ClvUpdater(stock, updateDate);
+                clvUpdaterObj.update();
 
                 //update AD
-                ADUpdater adUpdater5Obj = new ADUpdater();
-                adUpdater5Obj.updateAD(stock, updateDate, 5);
-                ADUpdater adUpdater14Obj = new ADUpdater();
-                adUpdater14Obj.updateAD(stock, updateDate, 14);
-                ADUpdater adUpdater20Obj = new ADUpdater();
-                adUpdater20Obj.updateAD(stock, updateDate, 20);
+                ADUpdater adUpdater5Obj = new ADUpdater(stock, updateDate, 5);
+                adUpdater5Obj.update();
+                ADUpdater adUpdater14Obj = new ADUpdater(stock, updateDate, 14);
+                adUpdater14Obj.update();
+                ADUpdater adUpdater20Obj = new ADUpdater(stock, updateDate, 20);
+                adUpdater20Obj.update();
+
+                //update CMF
+                CMFUpdater cmfUpdaterObj = new CMFUpdater(stock, updateDate);
+                cmfUpdaterObj.update();
 
             }
 

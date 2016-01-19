@@ -36,7 +36,7 @@ namespace DataElf
             {
                 sum += clvArray[i] * volumeArray[i];
             }
-            return sum/length;
+            return sum;
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace DataElf
                     if (i == 4) resultArray[0] = sum / days;
                     else if (i == 9) resultArray[1] = sum / days;
                     else if (i == 19) resultArray[2] = sum / days;
-                    else if (i == 49) resultArray[3] = sum / days;
+                    else if (i == 59) resultArray[3] = sum / days;
                     else if (i == 119) resultArray[4] = sum / days;
                     else if (i == 249) resultArray[5] = sum / days;
                 }
@@ -74,6 +74,27 @@ namespace DataElf
             }
 
             return resultArray;
+        }
+
+        /// <summary>
+        /// CMF: Chaikin's Money Flow
+        /// CMF = SUM(AD)/SUM(VOL)
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public static double CMFCalculator(double[] adArray, double[] volArray, 
+            int length)
+        {
+            double sumAD = 0.0;
+            double sumVol = 0.0;
+
+            for(int i = 0; i < 20; i++)
+            {
+                sumAD += adArray[i];
+                sumVol += volArray[i];
+            }
+
+            return sumAD/sumVol;
         }
 
     }
