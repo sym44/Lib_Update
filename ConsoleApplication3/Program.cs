@@ -60,6 +60,13 @@ namespace DataElf
                 CMFUpdater cmfUpdaterObj = new CMFUpdater(stock, updateDate);
                 cmfUpdaterObj.update();
 
+                //update BB
+                BBUpdater bbUpdater5Obj = new BBUpdater(stock, updateDate, 5);
+                bbUpdater5Obj.update();
+                BBUpdater bbUpdater14Obj = new BBUpdater(stock, updateDate, 14);
+                bbUpdater14Obj.update();
+                BBUpdater bbUpdater20Obj = new BBUpdater(stock, updateDate, 20);
+                bbUpdater20Obj.update();
             }
 
             Console.ReadKey();

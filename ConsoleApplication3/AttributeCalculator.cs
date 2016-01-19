@@ -97,5 +97,63 @@ namespace DataElf
             return sumAD/sumVol;
         }
 
+        /// <summary>
+        /// BB: Bollinger Bands
+        /// BB = (收盘价 - MA(收盘价, N))/stdev(收盘价, N)
+        /// </summary>
+        /// <param name="closeArray"></param>
+        /// <param name="bbLength"></param>
+        /// <returns></returns>
+        public static double BBCalculator(double[] closeArray, int bbLength)
+        {
+            double close = closeArray[0];
+            List<double> closeRange = new List<double>(bbLength);
+            double MA = 0.0, STDEV = 0.0;
+
+            for (int i = 0; i < bbLength; i++)
+            {
+                closeRange.Add(closeArray[i]);
+            }
+            MA = average(closeRange);
+            STDEV = stdev(closeRange);
+
+            return (close - MA) / STDEV;
+        }
+
+        #region MathHelper
+        /// <summary>
+        /// 求出数据平均值,并保留三位小数
+        /// </summary>
+        /// <param name="Valist">数据集合</param>
+        /// <returns></returns>
+        public static double average(List<double> Valist)
+        {
+            double sum = 0;
+            foreach (double d in Valist)
+            {
+                sum = sum + d;
+            }
+            double revl = System.Math.Round(sum / Valist.Count, 3);
+            return revl;
+        }
+
+        /// <summary>
+        /// 求数据集合标准差
+        /// </summary>
+        /// <param name="ValList"></param>
+        /// <returns></returns>
+        public static double stdev(List<double> ValList)
+        {
+            double avg = average(ValList);
+            double sumstdev = 0;
+            foreach (double d in ValList)
+            {
+                sumstdev = sumstdev + (d - avg) * (d - avg);
+            }
+            double stdeval = System.Math.Sqrt(sumstdev);
+            return System.Math.Round(stdeval, 3);
+        }
+
+        #endregion MathHelper
     }
 }

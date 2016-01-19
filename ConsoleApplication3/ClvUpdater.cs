@@ -171,6 +171,9 @@ namespace DataElf
         }
     }
 
+    /// <summary>
+    /// Responsible for handling all the working process of the CMF update.
+    /// </summary>
     class CMFUpdater : IUpdate
     {
         private string s_info_windcode;
@@ -238,6 +241,69 @@ namespace DataElf
             cmfArray = AttributeCalculator.MACalculator(dataList);
             SQLHelper.UpdateMultipleValueIntoTable(cmfArray, "cmf",
                 s_info_windcode, trade_dt);
+        }
+    }
+
+    class BBUpdater : IUpdate
+    {
+        private string s_info_windcode;
+        private string trade_dt;
+        private int BBLength;
+
+        public BBUpdater(string s_info_windcode, string trade_dt, int BBLength)
+        {
+            this.s_info_windcode = s_info_windcode;
+            this.trade_dt = trade_dt;
+            this.BBLength = BBLength;
+        }
+
+        public void update()
+        {
+            this.updateBaseValue(s_info_windcode, trade_dt, BBLength);
+            this.updateDerivedValue(s_info_windcode, trade_dt, BBLength);
+        }
+
+        private void updateBaseValue(string s_info_windcode, string trade_dt, 
+            int BBLength)
+        {
+            //fetch
+            double[] closeArray = new double[BBLength];
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = "select s_info_windcode, s_dq_close "
+                + "from dbo.Result where s_info_windcode = '"
+                + s_info_windcode + "' and trade_dt <= '"
+                + trade_dt + "' order by trade_dt desc";
+            List<double> dataList = SQLHelper.FetchQueryResultToDouble(cmd);
+
+            for (int i = 0; i < BBLength; i++)
+            {
+                closeArray[i] = dataList[i];
+            }
+
+            double bb = AttributeCalculator.BBCalculator(closeArray, BBLength);
+            SQLHelper.UpdateSingleValueIntoTable(bb, "bb_" + BBLength.ToString(),
+                s_info_windcode, trade_dt);
+        }
+
+        private void updateDerivedValue(string s_info_windcode, string trade_dt, 
+            int BBLength)
+        {
+            //fetch
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = "select s_info_windcode, BB_" + BBLength.ToString()
+                + " from Result" + " where s_info_windcode = '" + s_info_windcode
+                + "' and trade_dt <= '" + trade_dt
+                + "' order by trade_dt desc";
+            List<double> dataList = SQLHelper.FetchQueryResultToDouble(cmd);
+
+            //update
+            double[] bbArray = new double[6];
+            bbArray = AttributeCalculator.MACalculator(dataList);
+            SQLHelper.UpdateMultipleValueIntoTable(bbArray, 
+                "bb_" + BBLength.ToString(), s_info_windcode, trade_dt);
         }
     }
 }
