@@ -79,6 +79,8 @@ namespace DataElf
                 rsiUpdaterObj.update();
 
                 //TODO: update SO
+                SOUpdater soUpdateObj = new SOUpdater(stock, updateDate);
+                soUpdateObj.update();
 
                 //TODO: update MACD
 

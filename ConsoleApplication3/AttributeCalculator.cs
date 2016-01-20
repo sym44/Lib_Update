@@ -159,6 +159,23 @@ namespace DataElf
             return 100 * RS / (1 + RS);
         }
 
+
+        /// <summary>
+        /// SO: Stochastic Osillator
+        /// </summary>
+        /// <param name="closeToday"></param>
+        /// <param name="lowArray"></param>
+        /// <param name="highArray"></param>
+        /// <returns></returns>
+        public static double SOCalculator(double closeToday, double[] lowArray, 
+            double[] highArray)
+        {
+            double minLow = lowArray.Min();
+            double maxHigh = highArray.Max();
+
+            return (closeToday - minLow) / (maxHigh - minLow);
+        }
+
         #region MathHelper
         /// <summary>
         /// 求出数据平均值,并保留三位小数

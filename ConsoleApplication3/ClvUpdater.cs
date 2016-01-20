@@ -311,6 +311,9 @@ namespace DataElf
         }
     }
 
+    /// <summary>
+    /// Responsible for handling all the working process of the PPO update.
+    /// </summary>
     class PPOUpdater : IUpdate
     {
         private string s_info_windcode;
@@ -378,7 +381,9 @@ namespace DataElf
         }
     }
 
-
+    /// <summary>
+    /// Responsible for handling all the working process of the RSI update.
+    /// </summary>
     class RSIUpdater : IUpdate
     {
         private string s_info_windcode;
@@ -435,6 +440,73 @@ namespace DataElf
             double[] rsiArray = new double[6];
             rsiArray = AttributeCalculator.MACalculator(dataList);
             SQLHelper.UpdateMultipleValueIntoTable(rsiArray, "rsi", 
+                s_info_windcode, trade_dt);
+        }
+    }
+
+
+    class SOUpdater : IUpdate
+    {
+        private string s_info_windcode;
+        private string trade_dt;
+
+        public SOUpdater(string s_info_windcode, string trade_dt)
+        {
+            this.s_info_windcode = s_info_windcode;
+            this.trade_dt = trade_dt;
+        }
+
+        public void update()
+        {
+            this.updateBaseValue(s_info_windcode, trade_dt);
+            this.updateDerivedValue(s_info_windcode, trade_dt);
+        }
+
+        private void updateBaseValue(string s_info_windcode, string trade_dt)
+        {
+            //fetch
+            double closeToday = 0.0;
+            double[] lowArray = new double[39];
+            double[] highArray = new double[39];
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = "select top 39 s_info_windcode, s_dq_open, "
+                + "s_dq_high, s_dq_low, s_dq_close,"
+                + " s_dq_volume from dbo.Result where trade_dt <= '"
+                + trade_dt + "' and s_info_windcode = '"
+                + s_info_windcode + "' order by trade_dt desc";
+            List<Program.priceCombo> list = SQLHelper
+                .FetchQueryResultToPriceCombo(cmd);
+
+            closeToday = list[0].s_dq_close;
+            for (int i = 0; i < 39; i++)
+            {
+                lowArray[i] = list[i].s_dq_low;
+                highArray[i] = list[i].s_dq_high;
+            }
+
+            //update
+            double so = AttributeCalculator.SOCalculator(closeToday, lowArray, highArray);
+            SQLHelper.UpdateSingleValueIntoTable(so, "so", s_info_windcode, 
+                trade_dt);
+        }
+
+        private void updateDerivedValue(string s_info_windcode, string trade_dt)
+        {
+            //fetch
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = "select s_info_windcode, so"
+                + " from Result" + " where s_info_windcode = '" + s_info_windcode
+                + "' and trade_dt <= '" + trade_dt
+                + "' order by trade_dt desc";
+            List<double> dataList = SQLHelper.FetchQueryResultToDouble(cmd);
+
+            //update
+            double[] soArray = new double[6];
+            soArray = AttributeCalculator.MACalculator(dataList);
+            SQLHelper.UpdateMultipleValueIntoTable(soArray, "so",
                 s_info_windcode, trade_dt);
         }
     }
