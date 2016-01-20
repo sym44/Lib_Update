@@ -176,6 +176,15 @@ namespace DataElf
             return (closeToday - minLow) / (maxHigh - minLow);
         }
 
+        public static double WRCalculator(double[] closeArray, int WRLength)
+        {
+            double minClose = closeArray.Min();
+            double maxClose = closeArray.Max();
+            double closeToday = closeArray[0];
+
+            return - (minClose - closeToday) / (maxClose - minClose) * 100;
+        }
+
         #region MathHelper
         /// <summary>
         /// 求出数据平均值,并保留三位小数

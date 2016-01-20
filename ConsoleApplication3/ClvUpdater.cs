@@ -444,7 +444,9 @@ namespace DataElf
         }
     }
 
-
+    /// <summary>
+    /// Responsible for handling all the working process of the SO update.
+    /// </summary>
     class SOUpdater : IUpdate
     {
         private string s_info_windcode;
@@ -508,6 +510,70 @@ namespace DataElf
             soArray = AttributeCalculator.MACalculator(dataList);
             SQLHelper.UpdateMultipleValueIntoTable(soArray, "so",
                 s_info_windcode, trade_dt);
+        }
+    }
+
+
+    class WRUpdater : IUpdate
+    {
+        private string s_info_windcode;
+        private string trade_dt;
+        private int WRLength;
+
+        public WRUpdater(string s_info_windcode, string trade_dt,
+            int WRLength)
+        {
+            this.s_info_windcode = s_info_windcode;
+            this.trade_dt = trade_dt;
+            this.WRLength = WRLength;
+        }
+
+        public void update()
+        {
+            this.updateBaseValue();
+            this.updateDerivedValue();
+        }
+
+        private void updateBaseValue()
+        {
+            //fetch
+            double[] closeArray = new double[WRLength];
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = "select s_info_windcode, s_dq_close "
+                + "from dbo.Result where s_info_windcode = '"
+                + s_info_windcode + "' and trade_dt <= '"
+                + trade_dt + "' order by trade_dt desc";
+            List<double> dataList = SQLHelper.FetchQueryResultToDouble(cmd);
+
+            for (int i = 0; i < WRLength; i++)
+            {
+                closeArray[i] = dataList[i]; //desc
+            }
+
+            //update
+            double wr = AttributeCalculator.WRCalculator(closeArray, WRLength);
+            SQLHelper.UpdateSingleValueIntoTable(wr, "wr_" + WRLength.ToString(),
+                s_info_windcode, trade_dt);
+        }
+
+        private void updateDerivedValue()
+        {
+            //fetch
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = "select s_info_windcode, WR_" + WRLength.ToString()
+                + " from Result" + " where s_info_windcode = '" + s_info_windcode
+                + "' and trade_dt <= '" + trade_dt
+                + "' order by trade_dt desc";
+            List<double> dataList = SQLHelper.FetchQueryResultToDouble(cmd);
+
+            //update
+            double[] wrArray = new double[6];
+            wrArray = AttributeCalculator.MACalculator(dataList);
+            SQLHelper.UpdateMultipleValueIntoTable(wrArray,
+                "wr_" + WRLength.ToString(), s_info_windcode, trade_dt);
         }
     }
 }

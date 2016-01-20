@@ -85,7 +85,12 @@ namespace DataElf
                 //TODO: update MACD
 
                 //TODO: update WR
-
+                WRUpdater wrUpdater5Obj = new WRUpdater(stock, updateDate, 5);
+                wrUpdater5Obj.update();
+                WRUpdater wrUpdater14Obj = new WRUpdater(stock, updateDate, 14);
+                wrUpdater14Obj.update();
+                WRUpdater wrUpdater20Obj = new WRUpdater(stock, updateDate, 20);
+                wrUpdater20Obj.update();
             }
 
             Console.ReadKey();
