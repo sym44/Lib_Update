@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -120,6 +121,44 @@ namespace DataElf
             return (close - MA) / STDEV;
         }
 
+        public static double PPOCalculator(double closeToday, double PPOYesterday)
+        {
+            double emaShort = emaRecursionNext(closeToday, PPOYesterday, 12);
+            double emaLong = emaRecursionNext(closeToday, PPOYesterday, 26);
+            return 100.0 * (emaShort - emaLong) / emaShort;
+        }
+
+        /// <summary>
+        /// RSI: Relative Strength Indicator
+        /// RS = MA(日正收益率,N) / MA(日负收益率,N), RSI = 100 * RS / (1+RS)
+        /// </summary>
+        /// <param name="closeArray"></param>
+        /// <returns></returns>
+        public static double RSICalculator(double[] closeArray)
+        {
+            double RS, PS = 0.0, NS = 0.0;
+            ArrayList positivePR = new ArrayList();
+            ArrayList negativePR = new ArrayList();
+  
+            for(int i = 0; i < closeArray.Length - 1; i++)
+            {
+                if(closeArray[i] >= closeArray[i + 1])
+                {
+                    positivePR.Add(closeArray[i] - closeArray[i + 1]);
+                }
+                else
+                {
+                    negativePR.Add(closeArray[i + 1] - closeArray[i]);
+                }
+            }
+
+            foreach (double element in positivePR) { PS += element; }
+            foreach (double element in negativePR) { NS += element; }
+            RS = PS / NS;
+
+            return 100 * RS / (1 + RS);
+        }
+
         #region MathHelper
         /// <summary>
         /// 求出数据平均值,并保留三位小数
@@ -152,6 +191,13 @@ namespace DataElf
             }
             double stdeval = System.Math.Sqrt(sumstdev);
             return System.Math.Round(stdeval, 3);
+        }
+
+        public static double emaRecursionNext(double closeToday, double lastPPO, 
+            int lag)
+        {
+            double alpha = 2 / (lag + 1);
+            return alpha * closeToday + (1 - alpha) * lastPPO;
         }
 
         #endregion MathHelper

@@ -67,6 +67,23 @@ namespace DataElf
                 bbUpdater14Obj.update();
                 BBUpdater bbUpdater20Obj = new BBUpdater(stock, updateDate, 20);
                 bbUpdater20Obj.update();
+
+                //TODO: update PPO
+                //PPOUpdater ppoUpdaterObj = new PPOUpdater(stock, updateDate);
+                //ppoUpdaterObj.update();
+
+                //TODO: update PVO
+
+                //TODO: update RSI
+                RSIUpdater rsiUpdaterObj = new RSIUpdater(stock, updateDate);
+                rsiUpdaterObj.update();
+
+                //TODO: update SO
+
+                //TODO: update MACD
+
+                //TODO: update WR
+
             }
 
             Console.ReadKey();
