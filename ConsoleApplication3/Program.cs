@@ -69,8 +69,8 @@ namespace DataElf
                 bbUpdater20Obj.update();
 
                 //TODO: update PPO
-                //PPOUpdater ppoUpdaterObj = new PPOUpdater(stock, updateDate);
-                //ppoUpdaterObj.update();
+                PPOUpdater ppoUpdaterObj = new PPOUpdater(stock, updateDate);
+                ppoUpdaterObj.update();
 
                 //TODO: update PVO
 

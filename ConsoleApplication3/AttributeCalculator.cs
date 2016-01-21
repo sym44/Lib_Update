@@ -121,12 +121,24 @@ namespace DataElf
             return (close - MA) / STDEV;
         }
 
-        public static double PPOCalculator(double closeToday, double PPOYesterday)
+        /// <summary>
+        /// PPO: Percentage Price Oscillator
+        /// PPO = 100 * (EMA(close, SHORT) - EMA(close, LONG)) / EMA(close, SHORT)
+        /// PVO: Percentage Volume Oscillator
+        /// PVO = 100 * (EMA(volume, SHORT) - EMA(volume, LONG)) / EMA(volume, SHORT)
+        /// </summary>
+        /// <param name="valueToday"></param>
+        /// <param name="emaShortYesterday">the EMA value of the last trading day</param>
+        /// <param name="emaLongYesterday">the EMA 26 value of the last trading day</param>
+        /// <returns></returns>
+        public static double PPOPVOCalculator(double valueToday, double emaShortYesterday, 
+            double emaLongYesterday)
         {
-            double emaShort = emaRecursionNext(closeToday, PPOYesterday, 12);
-            double emaLong = emaRecursionNext(closeToday, PPOYesterday, 26);
-            return 100.0 * (emaShort - emaLong) / emaShort;
+            double emaShortToday = emaRecursionNext(valueToday, emaShortYesterday, 12);
+            double emaLongToday = emaRecursionNext(valueToday, emaLongYesterday, 26);
+            return 100.0 * (emaShortToday - emaLongToday) / emaShortToday;
         }
+
 
         /// <summary>
         /// RSI: Relative Strength Indicator
@@ -143,13 +155,9 @@ namespace DataElf
             for(int i = 0; i < closeArray.Length - 1; i++)
             {
                 if(closeArray[i] >= closeArray[i + 1])
-                {
-                    positivePR.Add(closeArray[i] - closeArray[i + 1]);
-                }
+                { positivePR.Add(closeArray[i] - closeArray[i + 1]); }
                 else
-                {
-                    negativePR.Add(closeArray[i + 1] - closeArray[i]);
-                }
+                { negativePR.Add(closeArray[i + 1] - closeArray[i]); }
             }
 
             foreach (double element in positivePR) { PS += element; }
@@ -219,11 +227,11 @@ namespace DataElf
             return System.Math.Round(stdeval, 3);
         }
 
-        public static double emaRecursionNext(double closeToday, double lastPPO, 
+        public static double emaRecursionNext(double closeToday, double lastValue, 
             int lag)
         {
             double alpha = 2 / (lag + 1);
-            return alpha * closeToday + (1 - alpha) * lastPPO;
+            return alpha * closeToday + (1 - alpha) * lastValue;
         }
 
         #endregion MathHelper

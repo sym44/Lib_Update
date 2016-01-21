@@ -335,7 +335,8 @@ namespace DataElf
         {
             //fetch
             double closeToday = 0.0;
-            double PPOYesterday = 0.0;
+            double emaShortYesterday = 0.0;
+            double emaLongYesterday = 0.0;
 
             SqlCommand cmd = new SqlCommand();
             cmd.CommandType = CommandType.Text;
@@ -343,23 +344,31 @@ namespace DataElf
                 + "from dbo.Result where s_info_windcode = '"
                 + s_info_windcode + "' and trade_dt = '" + trade_dt + "'";
             List<double> dataList = SQLHelper.FetchQueryResultToDouble(cmd);
-
-
+            
             SqlCommand cmd2 = new SqlCommand();
             cmd2.CommandType = CommandType.Text;
-            cmd2.CommandText = "select top 1 s_info_windcode, ppo "
+            cmd2.CommandText = "select top 1 s_info_windcode, close_ema_12 "
                 + "from dbo.Result where s_info_windcode = '"
                 + s_info_windcode + "' and trade_dt < '" + trade_dt
                 + "' order by trade_dt desc";
-            List<double> ppoList = SQLHelper.FetchQueryResultToDouble(cmd2);
+            List<double> emaShortList = SQLHelper.FetchQueryResultToDouble(cmd2);
+
+            SqlCommand cmd3 = new SqlCommand();
+            cmd3.CommandType = CommandType.Text;
+            cmd3.CommandText = "select top 1 s_info_windcode, close_ema_26 "
+                + "from dbo.Result where s_info_windcode = '"
+                + s_info_windcode + "' and trade_dt < '" + trade_dt
+                + "' order by trade_dt desc";
+            List<double> emaLongList = SQLHelper.FetchQueryResultToDouble(cmd3);
 
             closeToday = dataList[0];
-            PPOYesterday = ppoList[0];
+            emaShortYesterday = emaShortList[0];
+            emaLongYesterday = emaLongList[0];
 
-            double ppo = AttributeCalculator.PPOCalculator(closeToday, PPOYesterday);
+            double ppo = AttributeCalculator.PPOCalculator(closeToday, 
+                emaShortYesterday, emaLongYesterday);
             SQLHelper.UpdateSingleValueIntoTable(ppo, "ppo", s_info_windcode, 
                 trade_dt);
-
         }
 
         private void updateDerivedValue(string s_info_windcode, string trade_dt)
@@ -378,6 +387,64 @@ namespace DataElf
             ppoArray = AttributeCalculator.MACalculator(dataList);
             SQLHelper.UpdateMultipleValueIntoTable(ppoArray, "ppo", s_info_windcode, 
                 trade_dt);
+        }
+    }
+
+
+    class PVOUpdater : IUpdate
+    {
+        private string s_info_windcode;
+        private string trade_dt;
+
+        public PVOUpdater(string s_info_windcode, string trade_dt)
+        {
+            this.s_info_windcode = s_info_windcode;
+            this.trade_dt = trade_dt;
+        }
+
+        public void update()
+        {
+            this.updateBaseValue();
+            this.updateDerivedValue();
+        }
+
+        private void updateBaseValue()
+        {
+            //fetch
+
+        }
+
+        private void updateDerivedValue()
+        {
+
+        }
+    }
+
+    class MACDUpdater : IUpdate
+    {
+        private string s_info_windcode;
+        private string trade_dt;
+
+        public MACDUpdater(string s_info_windcode, string trade_dt)
+        {
+            this.s_info_windcode = s_info_windcode;
+            this.trade_dt = trade_dt;
+        }
+
+        public void update()
+        {
+            this.updateBaseValue();
+            this.updateDerivedValue();
+        }
+
+        private void updateBaseValue()
+        {
+
+        }
+
+        private void updateDerivedValue()
+        {
+
         }
     }
 
