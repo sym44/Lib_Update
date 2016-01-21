@@ -167,6 +167,8 @@ namespace DataElf
             return 100 * RS / (1 + RS);
         }
 
+        //public static double MACDCalculator(double[] closeArray)
+
 
         /// <summary>
         /// SO: Stochastic Osillator

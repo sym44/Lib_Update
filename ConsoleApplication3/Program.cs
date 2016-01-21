@@ -73,6 +73,8 @@ namespace DataElf
                 ppoUpdaterObj.update();
 
                 //TODO: update PVO
+                PVOUpdater pvoUpdateObj = new PVOUpdater(stock, updateDate);
+                pvoUpdateObj.update();
 
                 //TODO: update RSI
                 RSIUpdater rsiUpdaterObj = new RSIUpdater(stock, updateDate);
