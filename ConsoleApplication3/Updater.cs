@@ -488,12 +488,48 @@ namespace DataElf
 
         private void updateBaseValue()
         {
+            //fetch DEA DIFF
+            double diff = 0.0;
+            double dea = 0.0;
 
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = "select s_info_windcode, diff "
+                + "from dbo.Result where s_info_windcode = '"
+                + s_info_windcode + "' and trade_dt = '" + trade_dt + "'";
+            List<double> dataListDiff = SQLHelper.FetchQueryResultToDouble(cmd);
+
+            SqlCommand cmd2 = new SqlCommand();
+            cmd2.CommandType = CommandType.Text;
+            cmd2.CommandText = "select s_info_windcode, dea "
+                + "from dbo.Result where s_info_windcode = '"
+                + s_info_windcode + "' and trade_dt = '" + trade_dt + "'";
+            List<double> dataListDea = SQLHelper.FetchQueryResultToDouble(cmd2);
+
+            diff = dataListDiff[0];
+            dea = dataListDea[0];
+
+            double macd = AttributeCalculator.MACDCalculator(diff, dea);
+            SQLHelper.UpdateSingleValueIntoTable(macd, "macd", s_info_windcode,
+                trade_dt);
         }
 
         private void updateDerivedValue()
         {
+            //fetch
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = "select s_info_windcode, macd from Result "
+                + "where s_info_windcode = '" + s_info_windcode
+                + "' and trade_dt <= '" + trade_dt
+                + "' order by trade_dt desc";
+            List<double> dataList = SQLHelper.FetchQueryResultToDouble(cmd);
 
+            //update
+            double[] ppoArray = new double[6];
+            ppoArray = AttributeCalculator.MACalculator(dataList);
+            SQLHelper.UpdateMultipleValueIntoTable(ppoArray, "pvo", s_info_windcode,
+                trade_dt);
         }
     }
 

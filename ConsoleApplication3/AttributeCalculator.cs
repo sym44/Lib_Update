@@ -167,7 +167,15 @@ namespace DataElf
             return 100 * RS / (1 + RS);
         }
 
-        //public static double MACDCalculator(double[] closeArray)
+        /// <summary>
+        /// MACD算法
+        /// </summary>
+        /// <param name="n1">12</param>
+        /// <param name="n2">26</param>
+        /// <param name="n3">9</param>
+        /// <param name="day">K线数据</param>
+        /// <returns></returns>
+        public static double MACDCalculator(double DEA, double DIFF) { return DIFF - DEA; }
 
 
         /// <summary>
@@ -186,6 +194,13 @@ namespace DataElf
             return (closeToday - minLow) / (maxHigh - minLow);
         }
 
+        /// <summary>
+        /// WR: William's %R
+        /// WR = -(MIN(收盘价,N) - 收盘价) / (MAX(收盘价,N)-MIN(收盘价,N)) * 100
+        /// </summary>
+        /// <param name="closeArray"></param>
+        /// <param name="WRLength"></param>
+        /// <returns></returns>
         public static double WRCalculator(double[] closeArray, int WRLength)
         {
             double minClose = closeArray.Min();
