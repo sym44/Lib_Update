@@ -131,12 +131,10 @@ namespace DataElf
         /// <param name="emaShortYesterday">the EMA value of the last trading day</param>
         /// <param name="emaLongYesterday">the EMA 26 value of the last trading day</param>
         /// <returns></returns>
-        public static double PPOPVOCalculator(double valueToday, double emaShortYesterday, 
-            double emaLongYesterday)
+        public static double PPOPVOCalculator(double valueToday, double emaShort, 
+            double emaLong)
         {
-            double emaShortToday = emaRecursionNext(valueToday, emaShortYesterday, 12);
-            double emaLongToday = emaRecursionNext(valueToday, emaLongYesterday, 26);
-            return 100.0 * (emaShortToday - emaLongToday) / emaShortToday;
+            return 100.0 * (emaShort - emaLong) / emaShort;
         }
 
 

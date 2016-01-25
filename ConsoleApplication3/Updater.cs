@@ -8,6 +8,254 @@ using System.Data.SqlClient;
 
 namespace DataElf
 {
+    class Updater: IUpdate
+    {
+        private string s_info_windcode;
+        private string trade_dt;
+
+        public Updater(string s_info_windcode, string trade_dt)
+        {
+            this.s_info_windcode = s_info_windcode;
+            this.trade_dt = trade_dt;
+        }
+
+        public void update()
+        {
+            this.updateBaseValue1();
+            this.updateDerivedValue();
+        }
+
+        private void updateBaseValue1()
+        {
+            //fetch -- basic KL info
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = "select s_info_windcode, s_dq_open, "
+                + "s_dq_high, s_dq_low, s_dq_close,"
+                + " s_dq_volume from dbo.Result where trade_dt <= '"
+                + trade_dt + "' and s_info_windcode = '"
+                + s_info_windcode + "' order by trade_dt desc";
+            List<Program.priceCombo> list = SQLHelper
+                .FetchQueryResultToPriceCombo(cmd);
+
+            double clv = AttributeCalculator.ClvCalculator(
+                list[0].s_dq_close, list[0].s_dq_high, list[0].s_dq_low);
+            //SQLHelper.UpdateSingleValueIntoTable(clv, "clv", s_info_windcode,
+              //  trade_dt);
+     
+
+            //BB
+            //fetch
+            double[] closeArray = new double[list.Count];
+            double[] volumeArray = new double[list.Count];
+            double[] highArray = new double[list.Count];
+            double[] lowArray = new double[list.Count];
+            for(int i = 0; i < list.Count; i++)
+            {
+                closeArray[i] = list[i].s_dq_close;
+                volumeArray[i] = list[i].s_dq_volume;
+                highArray[i] = list[i].s_dq_high;
+                lowArray[i] = list[i].s_dq_low;
+            }
+
+            //update
+            double bb_5 = AttributeCalculator.BBCalculator(closeArray, 5);
+            //SQLHelper.UpdateSingleValueIntoTable(bb_5, "bb_5",
+            //    s_info_windcode, trade_dt);
+            double bb_14 = AttributeCalculator.BBCalculator(closeArray, 14);
+            //SQLHelper.UpdateSingleValueIntoTable(bb_14, "bb_14",
+            //    s_info_windcode, trade_dt);
+            double bb_20 = AttributeCalculator.BBCalculator(closeArray, 20);
+            //SQLHelper.UpdateSingleValueIntoTable(bb_20, "bb_20",
+            //    s_info_windcode, trade_dt);
+
+
+            //PPO
+            //fetch
+            double closeToday = closeArray[0];
+
+            SqlCommand cmd2 = new SqlCommand();
+            cmd2.CommandType = CommandType.Text;
+            cmd2.CommandText = "select top 1 s_info_windcode, close_ema_12 "
+                + "from dbo.Result where s_info_windcode = '"
+                + s_info_windcode + "' and trade_dt < '" + trade_dt
+                + "' order by trade_dt desc";
+            List<double> emaShortList = SQLHelper.FetchQueryResultToDouble(cmd2);
+
+            SqlCommand cmd3 = new SqlCommand();
+            cmd3.CommandType = CommandType.Text;
+            cmd3.CommandText = "select top 1 s_info_windcode, close_ema_26 "
+                + "from dbo.Result where s_info_windcode = '"
+                + s_info_windcode + "' and trade_dt < '" + trade_dt
+                + "' order by trade_dt desc";
+            List<double> emaLongList = SQLHelper.FetchQueryResultToDouble(cmd3);
+
+            double emaShortYesterday = emaShortList[0];
+            double emaLongYesterday = emaLongList[0];
+
+            double emaShort = AttributeCalculator.emaRecursionNext(closeToday, emaShortYesterday, 12);
+            double emaLong = AttributeCalculator.emaRecursionNext(closeToday, emaLongYesterday, 26);
+            double ppo = AttributeCalculator.PPOPVOCalculator(closeToday,
+                emaShort, emaLong);
+            //SQLHelper.UpdateSingleValueIntoTable(emaShort, "CLOSE_EMA_12", s_info_windcode, trade_dt);
+            //SQLHelper.UpdateSingleValueIntoTable(emaLong, "CLOSE_EMA_26", s_info_windcode, trade_dt);
+            //SQLHelper.UpdateSingleValueIntoTable(ppo, "ppo", s_info_windcode,
+            //    trade_dt);
+
+
+            //PVO
+            //fetch
+            double volumeToday = volumeArray[0];
+
+            SqlCommand cmd4 = new SqlCommand();
+            cmd4.CommandType = CommandType.Text;
+            cmd4.CommandText = "select top 1 s_info_windcode, volume_ema_12 "
+                + "from dbo.Result where s_info_windcode = '"
+                + s_info_windcode + "' and trade_dt < '" + trade_dt
+                + "' order by trade_dt desc";
+            List<double> emaVolumeShortList = SQLHelper.FetchQueryResultToDouble(cmd4);
+
+            SqlCommand cmd5 = new SqlCommand();
+            cmd5.CommandType = CommandType.Text;
+            cmd5.CommandText = "select top 1 s_info_windcode, volume_ema_26 "
+                + "from dbo.Result where s_info_windcode = '"
+                + s_info_windcode + "' and trade_dt < '" + trade_dt
+                + "' order by trade_dt desc";
+            List<double> emaVolumeLongList = SQLHelper.FetchQueryResultToDouble(cmd5);
+
+            double emaVolumeShortYesterday = emaVolumeShortList[0];
+            double emaVolumeLongYesterday = emaVolumeLongList[0];
+
+            double emaVolumeShortToday = AttributeCalculator.emaRecursionNext(volumeToday, emaShortYesterday, 12);
+            double emaVolumeLongToday = AttributeCalculator.emaRecursionNext(volumeToday, emaLongYesterday, 26);
+
+            double pvo = AttributeCalculator.PPOPVOCalculator(volumeToday,
+                emaVolumeShortToday, emaVolumeLongToday);
+            //SQLHelper.UpdateSingleValueIntoTable(emaVolumeShortToday, "VOLUME_EMA_12", s_info_windcode, trade_dt);
+            //SQLHelper.UpdateSingleValueIntoTable(emaVolumeLongToday, "VOLUME_EMA_26", s_info_windcode, trade_dt);
+            //SQLHelper.UpdateSingleValueIntoTable(pvo, "pvo", s_info_windcode,
+            //    trade_dt);
+
+
+            //RSI
+            //fetch
+            double[] closeArray15 = new double[15];
+            for (int i = 0; i < 15; i++) { closeArray15[i] = closeArray[i]; }
+
+            //update
+            double rsi = AttributeCalculator.RSICalculator(closeArray15);
+            SQLHelper.UpdateSingleValueIntoTable(rsi, "rsi", s_info_windcode,
+                trade_dt);
+
+
+            //SO
+            //fetch
+            double[] lowArray39 = new double[39];
+            double[] highArray39 = new double[39];
+
+            for (int i = 0; i < 39; i++)
+            {
+                lowArray39[i] = list[i].s_dq_low;
+                highArray39[i] = list[i].s_dq_high;
+            }
+
+            //update
+            double so = AttributeCalculator.SOCalculator(closeToday, lowArray39, highArray39);
+            //SQLHelper.UpdateSingleValueIntoTable(so, "so", s_info_windcode,
+            //    trade_dt);
+
+
+            //WR
+            //fetch
+            double[] closeArray5 = new double[5];
+            double[] closeArray14 = new double[14];
+            double[] closeArray20 = new double[20];
+
+            for (int i = 0; i < 5; i++) { closeArray5[i] = closeArray[i]; }
+            for (int i = 0; i < 14; i++) { closeArray14[i] = closeArray[i]; }
+            for (int i = 0; i < 20; i++) { closeArray20[i] = closeArray[i]; }
+
+            //update
+            double wr_5 = AttributeCalculator.WRCalculator(closeArray, 5);
+            double wr_14 = AttributeCalculator.WRCalculator(closeArray, 14);
+            double wr_20 = AttributeCalculator.WRCalculator(closeArray, 20);
+            //SQLHelper.UpdateSingleValueIntoTable(wr_5, "wr_5",
+            //    s_info_windcode, trade_dt);
+            //SQLHelper.UpdateSingleValueIntoTable(wr_14, "wr_14",
+            //    s_info_windcode, trade_dt);
+            //SQLHelper.UpdateSingleValueIntoTable(wr_20, "wr_20",
+            //    s_info_windcode, trade_dt);
+
+
+            double[] results = new double[11];
+            results[0] = clv;
+            results[1] = bb_5;
+            results[2] = bb_14;
+            results[3] = bb_20;
+            results[4] = ppo;
+            results[5] = pvo;
+            results[6] = rsi;
+            results[7] = so;
+            results[8] = wr_5;
+            results[9] = wr_14;
+            results[10] = wr_20;
+            SQLHelper.UpdateMultipleAttribute1IntoTable(results, s_info_windcode, trade_dt);
+
+
+            //fetch
+            SqlCommand cmd6 = new SqlCommand();
+            cmd6.CommandType = CommandType.Text;
+            cmd6.CommandText = "select s_info_windcode, clv "
+                + "from dbo.Result where s_info_windcode = '"
+                + s_info_windcode + "' and trade_dt <= '"
+                + trade_dt + "' order by trade_dt desc";
+            List<double> clvList = SQLHelper.FetchQueryResultToDouble(cmd6);
+
+            double[] clvArray5 = new double[5];
+            double[] volArray5 = new double[5];
+            double[] clvArray14 = new double[14];
+            double[] volArray14 = new double[14];
+            double[] clvArray20 = new double[20];
+            double[] volArray20 = new double[20];
+
+            for (int i = 0; i < 5; i++) { clvArray5[i] = clvList[i]; volArray5[i] = volumeArray[i]; }
+            for (int i = 0; i < 14; i++) { clvArray14[i] = clvList[i]; volArray14[i] = volumeArray[i]; }
+            for (int i = 0; i < 20; i++) { clvArray20[i] = clvList[i]; volArray20[i] = volumeArray[i]; }
+
+            double ad_5 = AttributeCalculator.ADCalculator(clvArray5,
+                volArray5, 5);
+            double ad_14 = AttributeCalculator.ADCalculator(clvArray14,
+                volArray14, 14);
+            double ad_20 = AttributeCalculator.ADCalculator(clvArray20,
+                volArray20, 20);
+            //SQLHelper.UpdateSingleValueIntoTable(ad_5, "ad_5", s_info_windcode, trade_dt);
+            //SQLHelper.UpdateSingleValueIntoTable(ad_14, "ad_14", s_info_windcode, trade_dt);
+            //SQLHelper.UpdateSingleValueIntoTable(ad_20, "ad_20", s_info_windcode, trade_dt);
+    
+            SqlCommand cmd7 = new SqlCommand();
+            cmd7.CommandType = CommandType.Text;
+            cmd7.CommandText = "select s_info_windcode, ad_5 "
+                + "from dbo.Result where s_info_windcode = '"
+                + s_info_windcode + "' and trade_dt <= '"
+                + trade_dt + "' order by trade_dt desc";
+            List<double> adList = SQLHelper.FetchQueryResultToDouble(cmd7);
+
+            double[] ad5Array20 = new double[20];
+            for (int i = 0; i < 20; i++) { ad5Array20[i] = adList[i]; volArray20[i] = volumeArray[i]; }
+
+            double cmf = AttributeCalculator.CMFCalculator(ad5Array20, volArray20, 20);
+            //SQLHelper.UpdateSingleValueIntoTable(cmf, "cmf", s_info_windcode,
+            //    trade_dt);
+
+            
+        }
+
+        private void updateDerivedValue()
+        {
+
+        }
+    }
+
     /// <summary>
     /// Responsible for handling all the working process of the CLV update.
     /// </summary>
@@ -349,7 +597,7 @@ namespace DataElf
             cmd2.CommandType = CommandType.Text;
             cmd2.CommandText = "select top 1 s_info_windcode, close_ema_12 "
                 + "from dbo.Result where s_info_windcode = '"
-                + s_info_windcode + "' and trade_dt <= '" + trade_dt
+                + s_info_windcode + "' and trade_dt < '" + trade_dt
                 + "' order by trade_dt desc";
             List<double> emaShortList = SQLHelper.FetchQueryResultToDouble(cmd2);
 
@@ -357,7 +605,7 @@ namespace DataElf
             cmd3.CommandType = CommandType.Text;
             cmd3.CommandText = "select top 1 s_info_windcode, close_ema_26 "
                 + "from dbo.Result where s_info_windcode = '"
-                + s_info_windcode + "' and trade_dt <= '" + trade_dt
+                + s_info_windcode + "' and trade_dt < '" + trade_dt
                 + "' order by trade_dt desc";
             List<double> emaLongList = SQLHelper.FetchQueryResultToDouble(cmd3);
 
@@ -365,10 +613,16 @@ namespace DataElf
             emaShortYesterday = emaShortList[0];
             emaLongYesterday = emaLongList[0];
 
+            double emaShort = AttributeCalculator.emaRecursionNext(closeToday, emaShortYesterday, 12);
+            double emaLong = AttributeCalculator.emaRecursionNext(closeToday, emaLongYesterday, 26);
             double ppo = AttributeCalculator.PPOPVOCalculator(closeToday, 
-                emaShortYesterday, emaLongYesterday);
+                emaShort, emaLong);
+            SQLHelper.UpdateSingleValueIntoTable(emaShort, "CLOSE_EMA_12", s_info_windcode, trade_dt);
+            SQLHelper.UpdateSingleValueIntoTable(emaLong, "CLOSE_EMA_26", s_info_windcode, trade_dt);
             SQLHelper.UpdateSingleValueIntoTable(ppo, "ppo", s_info_windcode, 
                 trade_dt);
+
+
         }
 
         private void updateDerivedValue(string s_info_windcode, string trade_dt)
@@ -413,7 +667,7 @@ namespace DataElf
         private void updateBaseValue()
         {
             //fetch
-            double closeToday = 0.0;
+            double volumeToday = 0.0;
             double emaShortYesterday = 0.0;
             double emaLongYesterday = 0.0;
 
@@ -428,7 +682,7 @@ namespace DataElf
             cmd2.CommandType = CommandType.Text;
             cmd2.CommandText = "select top 1 s_info_windcode, volume_ema_12 "
                 + "from dbo.Result where s_info_windcode = '"
-                + s_info_windcode + "' and trade_dt <= '" + trade_dt
+                + s_info_windcode + "' and trade_dt < '" + trade_dt
                 + "' order by trade_dt desc";
             List<double> emaShortList = SQLHelper.FetchQueryResultToDouble(cmd2);
 
@@ -436,17 +690,23 @@ namespace DataElf
             cmd3.CommandType = CommandType.Text;
             cmd3.CommandText = "select top 1 s_info_windcode, volume_ema_26 "
                 + "from dbo.Result where s_info_windcode = '"
-                + s_info_windcode + "' and trade_dt <= '" + trade_dt
+                + s_info_windcode + "' and trade_dt < '" + trade_dt
                 + "' order by trade_dt desc";
             List<double> emaLongList = SQLHelper.FetchQueryResultToDouble(cmd3);
 
-            closeToday = dataList[0];
+            volumeToday = dataList[0];
             emaShortYesterday = emaShortList[0];
             emaLongYesterday = emaLongList[0];
 
-            double ppo = AttributeCalculator.PPOPVOCalculator(closeToday,
-                emaShortYesterday, emaLongYesterday);
-            SQLHelper.UpdateSingleValueIntoTable(ppo, "pvo", s_info_windcode,
+            double emaVolumeShortToday = AttributeCalculator.emaRecursionNext(volumeToday, emaShortYesterday, 12);
+            double emaVolumeLongToday = AttributeCalculator.emaRecursionNext(volumeToday, emaLongYesterday, 26);
+
+
+            double pvo = AttributeCalculator.PPOPVOCalculator(volumeToday,
+                emaVolumeShortToday, emaVolumeLongToday);
+            SQLHelper.UpdateSingleValueIntoTable(emaVolumeShortToday, "VOLUME_EMA_12", s_info_windcode, trade_dt);
+            SQLHelper.UpdateSingleValueIntoTable(emaVolumeLongToday, "VOLUME_EMA_26", s_info_windcode, trade_dt);
+            SQLHelper.UpdateSingleValueIntoTable(pvo, "pvo", s_info_windcode,
                 trade_dt);
         }
 
@@ -665,7 +925,9 @@ namespace DataElf
         }
     }
 
-
+    /// <summary>
+    /// Responsible for handling all the working process of the WR udpate.
+    /// </summary>
     class WRUpdater : IUpdate
     {
         private string s_info_windcode;

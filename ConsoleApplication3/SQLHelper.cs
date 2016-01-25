@@ -168,5 +168,107 @@ namespace DataElf
                 connection.Close();
             }
         }
+
+
+        public static void UpdateMultipleAttribute1IntoTable(double[] values, string s_info_windcode, 
+            string trade_dt)
+        {
+            using (SqlConnection connection = new SqlConnection(STOCK_PRICE_CONNECTION))
+            {
+                connection.Open();
+
+                SqlCommand sqlCmd = new SqlCommand();
+                sqlCmd.Connection = connection;
+                sqlCmd.CommandType = CommandType.Text;
+                sqlCmd.CommandText = "UPDATE Result SET "
+                    + "CLV = " + values[0] + ", "
+                    + "BB_5 = " + values[1] + ", "
+                    + "BB_14 = " + values[2] + ", "
+                    + "BB_20 = " + values[3] + ", "
+                    + "PPO = " + values[4] + ", "
+                    + "PVO = " + values[5] + ", "
+                    + "RSI = " + values[6] + ", "
+                    + "SO = " + values[7] + ", "
+                    + "WR_5 = " + values[8] + ", "
+                    + "WR_14 = " + values[9] + ", "
+                    + "WR_20 = " + values[10]
+                    + " where s_info_windcode = '"
+                    + s_info_windcode + "' and trade_dt = '" + trade_dt + "'";
+
+                SqlParameter sqlReturn;
+                sqlReturn = sqlCmd.Parameters.Add("@return_value", SqlDbType.Int);
+                sqlReturn.Direction = ParameterDirection.ReturnValue;
+
+                sqlCmd.ExecuteNonQuery();
+
+                Console.WriteLine("........................{0}",
+                    sqlReturn.Value.ToString());
+                Console.WriteLine("{0}...{1}...{2}...{3}", s_info_windcode,
+                    trade_dt, "CLV", values[0]);
+                Console.WriteLine("{0}...{1}...{2}...{3}", s_info_windcode,
+                    trade_dt, "BB_5", values[1]);
+                Console.WriteLine("{0}...{1}...{2}...{3}", s_info_windcode,
+                    trade_dt, "BB_14", values[2]);
+                Console.WriteLine("{0}...{1}...{2}...{3}", s_info_windcode,
+                    trade_dt, "BB_20", values[3]);
+                Console.WriteLine("{0}...{1}...{2}...{3}", s_info_windcode,
+                    trade_dt, "PPO", values[4]);
+                Console.WriteLine("{0}...{1}...{2}...{3}", s_info_windcode,
+                    trade_dt, "PVO", values[5]);
+                Console.WriteLine("{0}...{1}...{2}...{3}", s_info_windcode,
+                    trade_dt, "RSI", values[5]);
+                Console.WriteLine("{0}...{1}...{2}...{3}", s_info_windcode,
+                    trade_dt, "SO", values[5]);
+                Console.WriteLine("{0}...{1}...{2}...{3}", s_info_windcode,
+                    trade_dt, "WR_5", values[5]);
+                Console.WriteLine("{0}...{1}...{2}...{3}", s_info_windcode,
+                    trade_dt, "WR_14", values[5]);
+                Console.WriteLine("{0}...{1}...{2}...{3}", s_info_windcode,
+                    trade_dt, "WR_20", values[5]);
+
+                connection.Close();
+            }
+        }
+
+
+        public static void UpdateMultipleAttribute2IntoTable(double[] values, string fieldName,
+           string s_info_windcode, string trade_dt)
+        {
+            using (SqlConnection connection = new SqlConnection(STOCK_PRICE_CONNECTION))
+            {
+                connection.Open();
+
+                SqlCommand sqlCmd = new SqlCommand();
+                sqlCmd.Connection = connection;
+                sqlCmd.CommandType = CommandType.Text;
+                sqlCmd.CommandText = "UPDATE Result SET "
+                    + "AD_5 = " + values[0] + ", "
+                    + "AD_14 = " + values[1] + ", "
+                    + "AD_20 = " + values[2] + ", "
+                    + "CMF = " + values[3]
+                    + " where s_info_windcode = '"
+                    + s_info_windcode + "' and trade_dt = '" + trade_dt + "'";
+
+                SqlParameter sqlReturn;
+                sqlReturn = sqlCmd.Parameters.Add("@return_value", SqlDbType.Int);
+                sqlReturn.Direction = ParameterDirection.ReturnValue;
+
+                sqlCmd.ExecuteNonQuery();
+
+                Console.WriteLine("........................{0}",
+                    sqlReturn.Value.ToString());
+                Console.WriteLine("{0}...{1}...{2}...{3}", s_info_windcode,
+                    trade_dt, "AD_5", values[0]);
+                Console.WriteLine("{0}...{1}...{2}...{3}", s_info_windcode,
+                    trade_dt, "AD_14", values[1]);
+                Console.WriteLine("{0}...{1}...{2}...{3}", s_info_windcode,
+                    trade_dt, "AD_20", values[2]);
+                Console.WriteLine("{0}...{1}...{2}...{3}", s_info_windcode,
+                    trade_dt, "CMF", values[3]);
+
+
+                connection.Close();
+            }
+        }
     }
 }

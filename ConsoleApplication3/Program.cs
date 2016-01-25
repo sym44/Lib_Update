@@ -41,58 +41,70 @@ namespace DataElf
 
             //update_prices("20150105");
 
-            //update_CLV 
-            foreach (string stock in stockList)
+            //foreach (string stock in stockList)
+            //{
+            //    Updater updater = new Updater(stock, updateDate);
+            //    updater.update();
+            //}
+
+            if (true)
             {
-                //update CLV
-                ClvUpdater clvUpdaterObj = new ClvUpdater(stock, updateDate);
-                clvUpdaterObj.update();
+                #region oldUpdate
+                //update_CLV 
+                foreach (string stock in stockList)
+                {
+                    //update CLV
+                    ClvUpdater clvUpdaterObj = new ClvUpdater(stock, updateDate);
+                    clvUpdaterObj.update();
 
-                //update AD
-                ADUpdater adUpdater5Obj = new ADUpdater(stock, updateDate, 5);
-                adUpdater5Obj.update();
-                ADUpdater adUpdater14Obj = new ADUpdater(stock, updateDate, 14);
-                adUpdater14Obj.update();
-                ADUpdater adUpdater20Obj = new ADUpdater(stock, updateDate, 20);
-                adUpdater20Obj.update();
+                    //update AD
+                    ADUpdater adUpdater5Obj = new ADUpdater(stock, updateDate, 5);
+                    adUpdater5Obj.update();
+                    ADUpdater adUpdater14Obj = new ADUpdater(stock, updateDate, 14);
+                    adUpdater14Obj.update();
+                    ADUpdater adUpdater20Obj = new ADUpdater(stock, updateDate, 20);
+                    adUpdater20Obj.update();
 
-                //update CMF
-                CMFUpdater cmfUpdaterObj = new CMFUpdater(stock, updateDate);
-                cmfUpdaterObj.update();
+                    //update CMF
+                    CMFUpdater cmfUpdaterObj = new CMFUpdater(stock, updateDate);
+                    cmfUpdaterObj.update();
 
-                //update BB
-                BBUpdater bbUpdater5Obj = new BBUpdater(stock, updateDate, 5);
-                bbUpdater5Obj.update();
-                BBUpdater bbUpdater14Obj = new BBUpdater(stock, updateDate, 14);
-                bbUpdater14Obj.update();
-                BBUpdater bbUpdater20Obj = new BBUpdater(stock, updateDate, 20);
-                bbUpdater20Obj.update();
+                    //update BB
+                    BBUpdater bbUpdater5Obj = new BBUpdater(stock, updateDate, 5);
+                    bbUpdater5Obj.update();
+                    BBUpdater bbUpdater14Obj = new BBUpdater(stock, updateDate, 14);
+                    bbUpdater14Obj.update();
+                    BBUpdater bbUpdater20Obj = new BBUpdater(stock, updateDate, 20);
+                    bbUpdater20Obj.update();
 
-                //TODO: update PPO
-                PPOUpdater ppoUpdaterObj = new PPOUpdater(stock, updateDate);
-                ppoUpdaterObj.update();
+                    //TODO: update PPO
+                    PPOUpdater ppoUpdaterObj = new PPOUpdater(stock, updateDate);
+                    ppoUpdaterObj.update();
 
-                //TODO: update PVO
-                PVOUpdater pvoUpdateObj = new PVOUpdater(stock, updateDate);
-                pvoUpdateObj.update();
+                    //TODO: update PVO
+                    PVOUpdater pvoUpdateObj = new PVOUpdater(stock, updateDate);
+                    pvoUpdateObj.update();
 
-                //TODO: update RSI
-                RSIUpdater rsiUpdaterObj = new RSIUpdater(stock, updateDate);
-                rsiUpdaterObj.update();
+                    //TODO: update RSI
+                    RSIUpdater rsiUpdaterObj = new RSIUpdater(stock, updateDate);
+                    rsiUpdaterObj.update();
 
-                //TODO: update SO
-                SOUpdater soUpdateObj = new SOUpdater(stock, updateDate);
-                soUpdateObj.update();
+                    //TODO: update SO
+                    SOUpdater soUpdateObj = new SOUpdater(stock, updateDate);
+                    soUpdateObj.update();
 
-                //TODO: update MACD
+                    //TODO: update MACD
 
-                //TODO: update WR
-                WRUpdater wrUpdater5Obj = new WRUpdater(stock, updateDate, 5);
-                wrUpdater5Obj.update();
-                WRUpdater wrUpdater14Obj = new WRUpdater(stock, updateDate, 14);
-                wrUpdater14Obj.update();
-                WRUpdater wrUpdater20Obj = new WRUpdater(stock, updateDate, 20);
-                wrUpdater20Obj.update();
+                    //TODO: update WR
+                    WRUpdater wrUpdater5Obj = new WRUpdater(stock, updateDate, 5);
+                    wrUpdater5Obj.update();
+                    WRUpdater wrUpdater14Obj = new WRUpdater(stock, updateDate, 14);
+                    wrUpdater14Obj.update();
+                    WRUpdater wrUpdater20Obj = new WRUpdater(stock, updateDate, 20);
+                    wrUpdater20Obj.update();
+                }
+                #endregion
+
             }
 
             Console.ReadKey();
