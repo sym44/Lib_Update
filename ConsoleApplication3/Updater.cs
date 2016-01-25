@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace DataElf
+namespace UpdateMatlab
 {
     class Updater: IUpdate
     {
@@ -35,7 +35,7 @@ namespace DataElf
                 + " s_dq_volume from dbo.Result where trade_dt <= '"
                 + trade_dt + "' and s_info_windcode = '"
                 + s_info_windcode + "' order by trade_dt desc";
-            List<Program.priceCombo> list = SQLHelper
+            List<UpdateMatlab.priceCombo> list = SQLHelper
                 .FetchQueryResultToPriceCombo(cmd);
 
             double clv = AttributeCalculator.ClvCalculator(
@@ -255,6 +255,7 @@ namespace DataElf
 
         }
     }
+    
 
     /// <summary>
     /// Responsible for handling all the working process of the CLV update.
@@ -296,7 +297,7 @@ namespace DataElf
                 + " s_dq_volume from dbo.Result where trade_dt = '"
                 + trade_dt + "' and s_info_windcode = '" 
                 + s_info_windcode + "' order by trade_dt desc";
-            List<Program.priceCombo> list = SQLHelper
+            List<UpdateMatlab.priceCombo> list = SQLHelper
                 .FetchQueryResultToPriceCombo(cmd);
 
 
@@ -378,7 +379,7 @@ namespace DataElf
                 + " s_dq_volume from dbo.Result where s_info_windcode = '"
                 + s_info_windcode + "' and trade_dt <= '"
                 + trade_dt + "' order by trade_dt desc";
-            List<Program.priceCombo> priceComboList = SQLHelper
+            List<UpdateMatlab.priceCombo> priceComboList = SQLHelper
                 .FetchQueryResultToPriceCombo(cmd2);
 
             for (int i = 0; i < ADLength; i++)
@@ -458,7 +459,7 @@ namespace DataElf
                 + " s_dq_volume from dbo.Result where s_info_windcode = '"
                 + s_info_windcode + "' and trade_dt <= '"
                 + trade_dt + "' order by trade_dt desc";
-            List<Program.priceCombo> priceComboList = SQLHelper
+            List<UpdateMatlab.priceCombo> priceComboList = SQLHelper
                 .FetchQueryResultToPriceCombo(cmd2);
 
             for (int i = 0; i < 20; i++)
@@ -890,7 +891,7 @@ namespace DataElf
                 + " s_dq_volume from dbo.Result where trade_dt <= '"
                 + trade_dt + "' and s_info_windcode = '"
                 + s_info_windcode + "' order by trade_dt desc";
-            List<Program.priceCombo> list = SQLHelper
+            List<UpdateMatlab.priceCombo> list = SQLHelper
                 .FetchQueryResultToPriceCombo(cmd);
 
             closeToday = list[0].s_dq_close;

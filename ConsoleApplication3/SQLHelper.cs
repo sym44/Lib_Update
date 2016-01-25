@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace DataElf
+
+namespace UpdateMatlab
 {
     class SQLHelper
     {
@@ -38,7 +39,7 @@ namespace DataElf
                 while (dr.Read())
                 {
                     //TODO: modify the missing value 
-                    Program.stockValueCombo structObj;
+                    UpdateMatlab.stockValueCombo structObj;
                     if (dr[1].GetType().Name == "DBNull")
                         structObj.value = 0.0;
                     else
@@ -57,10 +58,10 @@ namespace DataElf
         /// </summary>
         /// <param name="cmd"></param>
         /// <returns>List of Struct objects</returns>
-        public static List<Program.priceCombo> FetchQueryResultToPriceCombo
+        public static List<UpdateMatlab.priceCombo> FetchQueryResultToPriceCombo
             (SqlCommand cmd)
         {
-            List<Program.priceCombo> priceList = new List<Program.priceCombo>();
+            List<UpdateMatlab.priceCombo> priceList = new List<UpdateMatlab.priceCombo>();
             using (SqlConnection connection = new SqlConnection(STOCK_PRICE_CONNECTION))
             {
                 connection.Open();
@@ -68,7 +69,7 @@ namespace DataElf
                 SqlDataReader dr = cmd.ExecuteReader();
                 while (dr.Read())
                 {
-                    Program.priceCombo structObj;
+                    UpdateMatlab.priceCombo structObj;
                     structObj.s_dq_open = Convert.ToDouble(dr[1]);
                     structObj.s_dq_high = Convert.ToDouble(dr[2]);
                     structObj.s_dq_low = Convert.ToDouble(dr[3]);

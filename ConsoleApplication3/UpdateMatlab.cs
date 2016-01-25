@@ -7,12 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataElf
+namespace UpdateMatlab
 {
-    class Program
+    public class UpdateMatlab
     {
-        static ArrayList stockList = new ArrayList(2000);
-        static List<priceCombo> dataList = new List<priceCombo>();
+        private ArrayList stockList;
+        private List<priceCombo> dataList;
 
         #region definition
         public struct priceCombo
@@ -32,7 +32,13 @@ namespace DataElf
         }
         #endregion
 
-        static void Main(string[] args)
+        public UpdateMatlab(string trade_dt)
+        {
+            stockList = new ArrayList(2000);
+            dataList = new List<priceCombo>();
+        }
+
+        public void Main(string[] args)
         {
             string updateDate = "20150105";
             read_stock(updateDate);
@@ -110,7 +116,67 @@ namespace DataElf
             Console.ReadKey();
         }
 
-        static void read_stock(string trade_dt)
+        public void UpdateMatlabMethod(string updateDate)
+        {
+            read_stock(updateDate);
+            update_prices(updateDate);
+            foreach (string stock in stockList)
+            {
+                #region update
+                //update CLV
+                ClvUpdater clvUpdaterObj = new ClvUpdater(stock, updateDate);
+                clvUpdaterObj.update();
+
+                //update AD
+                ADUpdater adUpdater5Obj = new ADUpdater(stock, updateDate, 5);
+                adUpdater5Obj.update();
+                ADUpdater adUpdater14Obj = new ADUpdater(stock, updateDate, 14);
+                adUpdater14Obj.update();
+                ADUpdater adUpdater20Obj = new ADUpdater(stock, updateDate, 20);
+                adUpdater20Obj.update();
+
+                //update CMF
+                CMFUpdater cmfUpdaterObj = new CMFUpdater(stock, updateDate);
+                cmfUpdaterObj.update();
+
+                //update BB
+                BBUpdater bbUpdater5Obj = new BBUpdater(stock, updateDate, 5);
+                bbUpdater5Obj.update();
+                BBUpdater bbUpdater14Obj = new BBUpdater(stock, updateDate, 14);
+                bbUpdater14Obj.update();
+                BBUpdater bbUpdater20Obj = new BBUpdater(stock, updateDate, 20);
+                bbUpdater20Obj.update();
+
+                //TODO: update PPO
+                PPOUpdater ppoUpdaterObj = new PPOUpdater(stock, updateDate);
+                ppoUpdaterObj.update();
+
+                //TODO: update PVO
+                PVOUpdater pvoUpdateObj = new PVOUpdater(stock, updateDate);
+                pvoUpdateObj.update();
+
+                //TODO: update RSI
+                RSIUpdater rsiUpdaterObj = new RSIUpdater(stock, updateDate);
+                rsiUpdaterObj.update();
+
+                //TODO: update SO
+                SOUpdater soUpdateObj = new SOUpdater(stock, updateDate);
+                soUpdateObj.update();
+
+                //TODO: update MACD
+
+                //TODO: update WR
+                WRUpdater wrUpdater5Obj = new WRUpdater(stock, updateDate, 5);
+                wrUpdater5Obj.update();
+                WRUpdater wrUpdater14Obj = new WRUpdater(stock, updateDate, 14);
+                wrUpdater14Obj.update();
+                WRUpdater wrUpdater20Obj = new WRUpdater(stock, updateDate, 20);
+                wrUpdater20Obj.update();
+                #endregion
+            }
+        }
+
+        void read_stock(string trade_dt)
         {
             string con;
             con = "Server=localhost\\mssqlserver01;Database=factor;uid=sa;pwd=84265";
@@ -139,7 +205,7 @@ namespace DataElf
             }
         }
 
-        static void update_prices(string trade_dt)
+        void update_prices(string trade_dt)
         {
             string con;
             con = "Server=localhost\\mssqlserver01;Database=stock_price;uid=sa;pwd=84265";
