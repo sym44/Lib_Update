@@ -50,7 +50,7 @@
     <Compile Include="IUpdate.cs" />
     <Compile Include="SQLHelper.cs" />
     <Compile Include="Updater.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="UpdateMatlab.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
